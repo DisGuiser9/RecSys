@@ -1,44 +1,67 @@
-# 图书推荐系统
+# Book Recommendation System
 
-这是一个基于Flask的简单图书推荐系统，使用KNN算法为用户提供个性化图书推荐。
+## Project Overview
 
-## 功能特点
+This is a Flask-based book recommendation system utilizing the KNN collaborative filtering algorithm. Users can receive personalized book recommendations through this system. The frontend interface is inspired by the Taobao style, featuring a dark background, with read books displayed on the left, recommended books on the right, and user information and recommendation reasons at the top.
 
-- 展示图书列表
-- 基于用户ID的个性化图书推荐
-- 使用KNN算法进行协同过滤推荐
+## Installation Guide
 
-## 安装与运行
+### Prerequisites
 
-1. 安装依赖：
-```bash
-pip install -r requirements.txt
-```
+- Python 3.x
+- Flask
+- Pandas
+- Numpy
+- Scikit-learn
 
-2. 运行应用：
-```bash
-python app.py
-```
+### Installation Steps
 
-3. 访问应用：
-打开浏览器，访问 http://localhost:5000
+1. Clone the repository to your local machine:
+   ```bash
+   git clone <repository-url>
+   cd <repository-directory>
+   ```
 
-## 数据文件
+2. Create and activate a virtual environment:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+   ```
 
-系统使用以下数据文件：
-- `dataset/Books.csv`: 图书信息
-- `dataset/Users.csv`: 用户信息
-- `dataset/Ratings.csv`: 用户评分信息
+3. Install the dependencies:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-## 使用方法
+4. Run the project:
+   ```bash
+   python app.py
+   ```
 
-1. 在首页可以浏览所有图书
-2. 在推荐部分输入用户ID，点击"获取推荐"按钮获取个性化推荐
-3. 如果输入的用户ID在数据集中不存在，系统将返回热门图书推荐
+## Usage Instructions
 
-## 技术栈
+- After starting the application, visit `http://localhost:5000`.
+- Users can enter their user ID to receive personalized recommendations.
+- The system offers various recommendation modes, including quick and accurate recommendations.
 
-- Flask: Web框架
-- Pandas: 数据处理
-- Scikit-learn: KNN算法实现
-- Bootstrap: 前端UI框架 
+## File Structure
+
+- `app.py`: The main file for the Flask application, containing routes and recommendation logic.
+- `CF.py`: Module implementing the collaborative filtering algorithm.
+- `dataset/`: Contains dataset files such as `Books.csv` and `Users.csv`.
+- `templates/`: Contains HTML template files.
+- `static/`: Contains static files like CSS and JavaScript.
+
+## Contribution Guidelines
+
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository.
+2. Create a new branch: `git checkout -b feature/YourFeature`
+3. Commit your changes: `git commit -m 'Add some feature'`
+4. Push to the branch: `git push origin feature/YourFeature`
+5. Submit a Pull Request.
+
+## License Information
+
+This project is licensed under the MIT License. For more information, see the LICENSE file.
