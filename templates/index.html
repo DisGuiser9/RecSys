@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Recommendation System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #e6f7fa;
+        }
+        .header-section {
+            background: #e6f7fa;
+            padding: 2.5rem 0 1.5rem 0;
+            text-align: center;
+        }
+        .header-section h1 {
+            font-weight: bold;
+            color: #0099b8;
+        }
+        .header-section p {
+            color: #0088a9;
+            font-size: 1.2rem;
+        }
+        .search-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+            padding: 2rem 2rem 1.5rem 2rem;
+            margin: 0 auto 2rem auto;
+            max-width: 700px;
+        }
+        .search-tabs .nav-link {
+            font-weight: 500;
+            color: #0099b8;
+        }
+        .search-tabs .nav-link.active {
+            background: #e6f7fa;
+            color: #0099b8;
+            border-bottom: 2px solid #0099b8;
+        }
+        .search-input-group {
+            margin-top: 1rem;
+        }
+        .search-input-group input {
+            height: 48px;
+            font-size: 1.1rem;
+        }
+        .search-input-group .btn {
+            height: 48px;
+            font-size: 1.1rem;
+        }
+        .section-title {
+            color: #0099b8;
+            font-weight: bold;
+            margin: 1.5rem 0 1.2rem 0;
+            text-align: left;
+            font-size: 1.3rem;
+        }
+        .book-card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+            transition: transform 0.2s;
+            height: 100%;
+            margin: 0 auto;
+        }
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.13);
+        }
+        .book-img {
+            width: 100px;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 12px 12px 0 0;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .book-title {
+            font-size: 0.98rem;
+            font-weight: 600;
+            color: #222;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .book-author {
+            color: #0099b8;
+            font-size: 0.92rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .book-meta {
+            font-size: 0.85rem;
+            color: #888;
+        }
+        .rating-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #00b894;
+            color: #fff;
+            font-size: 0.85rem;
+            border-radius: 16px;
+            padding: 0.15em 0.6em;
+            font-weight: 500;
+            z-index: 2;
+        }
+        .fa-star {
+            color: #ffc107;
+        }
+        .main-content {
+            display: flex;
+            gap: 2rem;
+        }
+        .recommend-block {
+            flex: 1;
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+            padding: 1.5rem 1.5rem 1rem 1.5rem;
+            min-width: 0;
+        }
+        .search-results-block {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+            padding: 1.5rem 1.5rem 1rem 1.5rem;
+            margin-bottom: 2rem;
+            overflow-x: auto;
+        }
+        #searchResults {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 16px;
+            overflow-x: auto;
+            padding: 10px 5px;
+            scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+        }
+        #searchResults > div {
+            flex: 0 0 auto;
+            width: 240px;
+            margin-bottom: 0;
+        }
+        #searchResults::-webkit-scrollbar {
+            height: 8px;
+        }
+        #searchResults::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        #searchResults::-webkit-scrollbar-thumb {
+            background: #0099b8;
+            border-radius: 10px;
+        }
+        #searchResults::-webkit-scrollbar-thumb:hover {
+            background: #007a94;
+        }
+        .recommend-block .row {
+            flex-wrap: wrap;
+        }
+        .col-md-6 {
+            padding-left: 8px;
+            padding-right: 8px;
+        }
+        @media (max-width: 991px) {
+            .main-content {
+                flex-direction: column;
+            }
+        }
+        /* 添加红色收藏按钮样式 */
+        .nav-favorites {
+            background-color: #dc3545;
+            color: white !important;
+            font-weight: bold;
+            border-radius: 4px;
+            margin-left: 5px;
+        }
+        .nav-favorites:hover {
+            background-color: #bb2d3b;
+        }
+        .card.book-card .btn {
+            font-size: 0.85rem;
+            padding: 0.25rem 0.5rem;
+        }
+        .search-result-card {
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            background: #fff;
+            padding: 1rem 1rem 0.5rem 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
+        }
+        .search-result-card .book-img {
+            width: 100px;
+            height: 140px;
+            margin-bottom: 0.5rem;
+        }
+        .search-result-card .book-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: #222;
+            margin-bottom: 0.2rem;
+            text-align: center;
+            white-space: normal;
+            overflow: hidden;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            max-height: 2.8em;
+            line-height: 1.4em;
+        }
+        .search-result-card .book-author {
+            color: #0099b8;
+            font-size: 0.95rem;
+            margin-bottom: 0.2rem;
+            text-align: center;
+        }
+        .search-result-card .book-meta {
+            font-size: 0.85rem;
+            color: #888;
+            text-align: center;
+        }
+        .search-result-card .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            width: 100%;
+        }
+        .search-result-card .btn {
+            font-size: 0.92rem;
+            padding: 0.25rem 0.7rem;
+        }
+        .recommendation-reason-link {
+            float: right;
+            font-size: 0.9rem;
+            color: #0099b8;
+            text-decoration: none;
+            transition: color 0.2s;
+            margin-top: 5px;
+        }
+        .recommendation-reason-link:hover {
+            color: #007a94;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #0099b8;">
+        <div class="container">
+            <a class="navbar-brand" href="/"><i class="fas fa-book-reader"></i> Book Recommender</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/"><i class="fas fa-home"></i> Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link nav-favorites" href="/favorites"><i class="fas fa-heart"></i> My Favorites</a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="modeDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-sliders-h"></i> Recommendation Mode
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#" id="quickMode"><i class="fas fa-bolt"></i> Quick Mode (Performance)</a></li>
+                            <li><a class="dropdown-item" href="#" id="accurateMode"><i class="fas fa-check-circle"></i> Accurate Mode (Quality)</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <span class="navbar-text" id="navUserID">
+                    <select id="userIdSelect" class="form-select form-select-sm d-inline-block" style="width:100px;"></select>
+                    <button class="btn btn-sm btn-info ms-1" id="setUserIdBtn">切换</button>
+                    <span class="ms-2">Current: <b id="navUserDisplay"></b></span>
+                </span>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="header-section">
+        <h1>Book Recommendation System</h1>
+        <p>Discover your next favorite book</p>
+        <div class="mb-2">
+            <span class="badge bg-info" id="currentMode">
+                <i class="fas fa-bolt"></i> Quick Recommendation Mode
+            </span>
+        </div>
+        <div class="search-card">
+            <ul class="nav nav-tabs search-tabs" id="searchTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="title-tab" data-bs-toggle="tab" data-bs-target="#title" type="button" role="tab"><i class="fas fa-book"></i> Search by Title</button>
+                </li>
+            </ul>
+            <div class="tab-content search-input-group" id="searchTabContent">
+                <div class="tab-pane fade show active" id="title" role="tabpanel">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="titleSearchInput" placeholder="Enter book title...">
+                        <button class="btn btn-info text-white" type="button" id="searchBtnTitle"><i class="fas fa-search"></i> Search</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Search Results Block (hidden by default) -->
+        <div class="search-results-block" id="searchResultsBlock" style="display:none;">
+            <div class="section-title"><i class="fas fa-search me-2"></i>Search Results</div>
+            <div id="searchResults">
+                <!-- Search result cards will be loaded here -->
+            </div>
+        </div>
+        <div class="main-content">
+            <!-- Popular Books Block -->
+            <div class="recommend-block">
+                <div class="section-title"><i class="fas fa-fire me-2"></i>Popular Books</div>
+                <div class="row" id="popularBooks">
+                    {% for book in popular_books %}
+                    <div class="col-md-6 mb-4">
+                        <div class="card book-card position-relative">
+                            <span class="rating-badge"><i class="fas fa-star"></i> {{ "%.1f"|format(book.avg_rating|float) }} <span style='font-size:0.9em;'>({{ book.rating_count }})</span></span>
+                            <img src="{{ book['Image-URL-M'] or 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/387928/book%20placeholder.png' }}" class="card-img-top book-img" alt="{{ book['Book-Title'] }}" onerror="this.src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/387928/book%20placeholder.png'">
+                            <div class="card-body">
+                                <div class="book-title">{{ book['Book-Title'] }}</div>
+                                <div class="book-author"><i class="fas fa-user"></i> {{ book['Book-Author'] }}</div>
+                                <div class="book-meta mt-1">
+                                    <i class="fas fa-calendar-alt"></i> {{ book['Year-Of-Publication'] or '' }}<br>
+                                    <i class="fas fa-building"></i> {{ book['Publisher'] or '' }}
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <a href="/book/{{ book.ISBN }}" class="btn btn-outline-info">View Details</a>
+                                    <button class="btn {{ 'btn-danger' if book.is_favorite else 'btn-outline-danger' }} btn-sm" onclick="toggleFavorite('{{ book.ISBN }}', this)">
+                                        <i class="fas fa-heart"></i> {{ 'Favorited' if book.is_favorite else 'Favorite' }}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            <!-- Guess You Like Block -->
+            <div class="recommend-block">
+                <div class="section-title">
+                    <i class="fas fa-heart me-2"></i>Guess You Like
+                    <a href="/recommendation_reasons" class="recommendation-reason-link" style="float: right; font-size: 0.9rem; color: #0099b8;">
+                        <i class="fas fa-question-circle"></i> Why these recommendations?
+                    </a>
+                </div>
+                <div class="row" id="guessBooks">
+                    {% for book in guess_books %}
+                    <div class="col-md-6 mb-4">
+                        <div class="card book-card position-relative">
+                            <span class="rating-badge"><i class="fas fa-star"></i> {{ "%.1f"|format(book.avg_rating|float) }} <span style='font-size:0.9em;'>({{ book.rating_count }})</span></span>
+                            <img src="{{ book['Image-URL-M'] or 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/387928/book%20placeholder.png' }}" class="card-img-top book-img" alt="{{ book['Book-Title'] }}" onerror="this.src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/387928/book%20placeholder.png'">
+                            <div class="card-body">
+                                <div class="book-title">{{ book['Book-Title'] }}</div>
+                                <div class="book-author"><i class="fas fa-user"></i> {{ book['Book-Author'] }}</div>
+                                <div class="book-meta mt-1">
+                                    <i class="fas fa-calendar-alt"></i> {{ book['Year-Of-Publication'] or '' }}<br>
+                                    <i class="fas fa-building"></i> {{ book['Publisher'] or '' }}
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <a href="/book/{{ book.ISBN }}" class="btn btn-outline-info">View Details</a>
+                                    <button class="btn {{ 'btn-danger' if book.is_favorite else 'btn-outline-danger' }} btn-sm" onclick="toggleFavorite('{{ book.ISBN }}', this)">
+                                        <i class="fas fa-heart"></i> {{ 'Favorited' if book.is_favorite else 'Favorite' }}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        let currentUserId = null;
+        let searchedBookIsbns = new Set();
+        
+        $(document).ready(function() {
+            // 初始化用户ID
+            initUserId();
+            // 更新当前推荐模式显示
+            updateModeDisplay();
+            
+            // 搜索按钮事件
+            $('#searchBtnTitle').click(function() {
+                handleSearch('title');
+            });
+            $('#titleSearchInput').keypress(function(e) {
+                if (e.which == 13) handleSearch('title');
+            });
+            
+            // 推荐模式切换
+            $('#quickMode').click(function() {
+                changeRecommendationMode('quick');
+            });
+            $('#accurateMode').click(function() {
+                changeRecommendationMode('accurate');
+            });
+
+            $('#setUserIdBtn').click(function() {
+                setUserId($('#userIdSelect').val());
+            });
+            $('#userIdSelect').on('change', function() {
+                setUserId($(this).val());
+            });
+        });
+
+        function isValidUserId(userId) {
+            return /^user([1-9][0-9]?|100)$/.test(userId);
+        }
+        function fillUserIdSelect() {
+            let select = $('#userIdSelect');
+            select.empty();
+            for (let i = 1; i <= 100; i++) {
+                let val = 'user' + i;
+                select.append(`<option value="${val}">${val}</option>`);
+            }
+        }
+        function setUserId(userId) {
+            if (isValidUserId(userId)) {
+                localStorage.setItem('user_id', userId);
+                $('#navUserDisplay').text(userId);
+                $('#userIdSelect').val(userId);
+                // 用URL参数刷新页面，确保后端能获取到
+                let url = new URL(window.location.href);
+                url.searchParams.set('user_id', userId);
+                window.location.href = url.toString();
+            } else {
+                alert('User ID must be user1 ~ user100');
+            }
+        }
+        function initUserId() {
+            let userId = localStorage.getItem('user_id');
+            if (!isValidUserId(userId)) {
+                userId = 'user1';
+                localStorage.setItem('user_id', userId);
+            }
+            fillUserIdSelect();
+            $('#navUserDisplay').text(userId);
+            $('#userIdSelect').val(userId);
+            return userId;
+        }
+        function getUserId() {
+            return localStorage.getItem('user_id') || initUserId();
+        }
+        // 在所有AJAX请求中自动带上user_id
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (settings.type === 'POST' && settings.data) {
+                    let dataObj = {};
+                    try { dataObj = JSON.parse(settings.data); } catch (e) {}
+                    dataObj.user_id = getUserId();
+                    settings.data = JSON.stringify(dataObj);
+                }
+            }
+        });
+
+        function handleSearch(type) {
+            let searchTerm = '';
+            if (type === 'title') {
+                searchTerm = $('#titleSearchInput').val();
+            }
+            if (!searchTerm) return;
+            
+            // 显示搜索结果
+            $.ajax({
+                url: '/recommend',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    type: 'title',
+                    title: searchTerm
+                }),
+                success: function(response) {
+                    if (!response.error && response.books && response.books.length > 0) {
+                        $('#searchResultsBlock').show();
+                        // 记录搜索到的图书ISBN
+                        searchedBookIsbns = new Set(response.books.map(book => book.ISBN));
+                        displayBooks(response.books, '#searchResults', 4, [], null, true);
+                    } else {
+                        $('#searchResultsBlock').hide();
+                    }
+                }
+            });
+        }
+
+        // columns: 每行显示的列数，默认2列
+        // excludeIsbns: 可选，排除这些ISBN的图书
+        // maxRows: 可选，最大展示行数
+        // isHorizontal: 可选，是否横向滚动（仅用于搜索结果）
+        function displayBooks(books, container, columns = 2, excludeIsbns = [], maxRows = null, isHorizontal = false) {
+            $(container).empty();
+            let filteredBooks = books;
+            if (excludeIsbns && excludeIsbns.length > 0) {
+                filteredBooks = books.filter(book => !excludeIsbns.includes(book.ISBN));
+            }
+            let maxBooks = filteredBooks.length;
+            if (maxRows && !isHorizontal) {
+                maxBooks = Math.min(filteredBooks.length, columns * maxRows);
+            }
+            for (let i = 0; i < maxBooks; i++) {
+                const book = filteredBooks[i];
+                let isFavorite = book.is_favorite ? true : false;
+                if (container === '#searchResults') {
+                    // 专属search result卡片
+                    const card = `
+                        <div>
+                            <div class="search-result-card">
+                                <img src="${book['Image-URL-M'] || 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/387928/book%20placeholder.png'}" class="book-img" alt="${book['Book-Title']}" onerror="this.src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/387928/book%20placeholder.png'">
+                                <div class="book-title">${book['Book-Title']}</div>
+                                <div class="book-author"><i class="fas fa-user"></i> ${book['Book-Author']}</div>
+                                <div class="book-meta">
+                                    <i class="fas fa-calendar-alt"></i> ${book['Year-Of-Publication'] || ''}<br>
+                                    <i class="fas fa-building"></i> ${book['Publisher'] || ''}
+                                </div>
+                                <div class="btn-group mt-2">
+                                    <a href="/book/${book.ISBN}" class="btn btn-outline-info">View Details</a>
+                                    <button class="btn ${isFavorite ? 'btn-danger' : 'btn-outline-danger'} btn-sm" onclick="toggleFavorite('${book.ISBN}', this)">
+                                        <i class="fas fa-heart"></i> ${isFavorite ? 'Favorited' : 'Favorite'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    $(container).append(card);
+                } else {
+                    // 其他区域沿用原有卡片
+                    let colClass = columns === 4 ? 'col-md-3' : 'col-md-6';
+                    if (isHorizontal) colClass = '';
+                    const card = `
+                        <div class="${colClass} mb-4">
+                            <div class="card book-card position-relative">
+                                <span class="rating-badge"><i class="fas fa-star"></i> ${book.avg_rating ? parseFloat(book.avg_rating).toFixed(1) : '0.0'} <span style='font-size:0.9em;'>(${book.rating_count || 0})</span></span>
+                                <img src="${book['Image-URL-M'] || 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/387928/book%20placeholder.png'}" class="card-img-top book-img" alt="${book['Book-Title']}" onerror="this.src='https://s3-us-west-2.amazonaws.com/s.cdpn.io/387928/book%20placeholder.png'">
+                                <div class="card-body">
+                                    <div class="book-title">${book['Book-Title']}</div>
+                                    <div class="book-author"><i class="fas fa-user"></i> ${book['Book-Author']}</div>
+                                    <div class="book-meta mt-1">
+                                        <i class="fas fa-calendar-alt"></i> ${book['Year-Of-Publication'] || ''}<br>
+                                        <i class="fas fa-building"></i> ${book['Publisher'] || ''}
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center mt-3">
+                                        <a href="/book/${book.ISBN}" class="btn btn-outline-info">View Details</a>
+                                        <button class="btn ${isFavorite ? 'btn-danger' : 'btn-outline-danger'} btn-sm" onclick="toggleFavorite('${book.ISBN}', this)">
+                                            <i class="fas fa-heart"></i> ${isFavorite ? 'Favorited' : 'Favorite'}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    $(container).append(card);
+                }
+            }
+        }
+
+        // 收藏/取消收藏图书
+        function toggleFavorite(isbn, btnSelector) {
+            const userId = getUserId();
+            // 获取按钮状态
+            const btn = btnSelector ? $(btnSelector)[0] : document.querySelector(`.btn[onclick*="toggleFavorite('${isbn}')"]`);
+            const isFavorite = btn && btn.classList.contains('btn-danger');
+            fetch('/book/favorite', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ user_id: userId, book_id: isbn })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.error) {
+                    // 只更新当前按钮状态
+                    if (data.is_favorite) {
+                        btn.classList.remove('btn-outline-danger');
+                        btn.classList.add('btn-danger');
+                        btn.innerHTML = '<i class="fas fa-heart"></i> Favorited';
+                    } else {
+                        btn.classList.remove('btn-danger');
+                        btn.classList.add('btn-outline-danger');
+                        btn.innerHTML = '<i class="fas fa-heart"></i> Favorite';
+                    }
+                } else {
+                    alert(data.message || '操作失败');
+                }
+            })
+            .catch(error => {
+                alert('操作失败，请重试');
+            });
+        }
+
+        // 切换推荐模式
+        function changeRecommendationMode(mode) {
+            console.log("切换推荐模式:", mode);
+            // 更新URL参数
+            let url = new URL(window.location.href);
+            url.searchParams.set('mode', mode);
+            
+            // 重新加载页面（确保使用当前位置的URL）
+            window.location.href = url.toString();
+        }
+
+        // 更新当前推荐模式显示
+        function updateModeDisplay() {
+            // 获取当前URL中的mode参数
+            let url = new URL(window.location.href);
+            let mode = url.searchParams.get('mode') || 'quick';
+            
+            if (mode === 'accurate') {
+                $('#currentMode').html('<i class="fas fa-check-circle"></i> Accurate Recommendation Mode');
+                $('#currentMode').removeClass('bg-info').addClass('bg-success');
+            } else {
+                $('#currentMode').html('<i class="fas fa-bolt"></i> Quick Recommendation Mode');
+                $('#currentMode').removeClass('bg-success').addClass('bg-info');
+            }
+        }
+    </script>
+</body>
+</html> 

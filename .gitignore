@@ -1,0 +1,13 @@
+models/
+data/
+dataset/
+
+*.log
+*.pyc
+__pycache__/
+.DS_Store
+.idea/
+.vscode/
+env/
+venv/
+*.egg-info/

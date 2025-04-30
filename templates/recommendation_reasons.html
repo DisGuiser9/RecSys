@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommendation Reasons - Book Recommendation System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #e6f7fa;
+        }
+        .header-section {
+            background: #e6f7fa;
+            padding: 2.5rem 0 1.5rem 0;
+            text-align: center;
+        }
+        .header-section h1 {
+            font-weight: bold;
+            color: #0099b8;
+        }
+        .header-section p {
+            color: #0088a9;
+            font-size: 1.2rem;
+        }
+        .reasons-container {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 16px rgba(0,0,0,0.06);
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .section-title {
+            color: #0099b8;
+            font-weight: bold;
+            margin: 1.5rem 0 1.2rem 0;
+            text-align: left;
+            font-size: 1.3rem;
+        }
+        .book-img {
+            width: 100px;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .book-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .book-author {
+            color: #0099b8;
+            margin-bottom: 5px;
+        }
+        .book-meta {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        .recommendation-group {
+            border-top: 1px solid #eee;
+            padding-top: 2rem;
+            margin-top: 2rem;
+        }
+        .recommendation-group:first-child {
+            border-top: none;
+            padding-top: 0;
+        }
+        .source-book {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #0099b8;
+        }
+        .similar-book {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid #eee;
+        }
+        .similarity-score {
+            background: #0099b8;
+            color: white;
+            border-radius: 16px;
+            padding: 0.2rem 0.8rem;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 0.5rem;
+        }
+        .similarity-reason {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 0.8rem;
+            margin-bottom: 0.5rem;
+        }
+        .reason-title {
+            color: #0099b8;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .nav-back {
+            margin-bottom: 1.5rem;
+        }
+        .similarity-explanation {
+            background: #f0f8ff;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            border-left: 4px solid #007bff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4 mb-5">
+        <div class="nav-back">
+            <a href="/" class="btn btn-outline-primary"><i class="fas fa-arrow-left"></i> Back to Home</a>
+        </div>
+
+        <div class="header-section mb-4">
+            <h1>Why We Recommend These Books?</h1>
+            <p>Understand how our recommendation algorithm selects similar books based on your favorites</p>
+        </div>
+
+        <div class="reasons-container">
+            <div class="similarity-explanation">
+                <h4><i class="fas fa-lightbulb"></i> Recommendation Principles</h4>
+                <p>Our recommendation system uses two main methods:</p>
+                <ul>
+                    <li><strong>Quick Recommendations (MF Method)</strong>: Uses Matrix Factorization to identify patterns in users' book ratings and preferences</li>
+                    <li><strong>Accurate Recommendations (Hybrid Method)</strong>: Combines content-based and collaborative filtering for more precise recommendations</li>
+                </ul>
+                <p>The similarity factors we consider include:</p>
+                <ul>
+                    <li><strong>Title Similarity</strong>: Books with titles similar to your favorites receive higher matching scores</li>
+                    <li><strong>Author Matching</strong>: Other works by the same author are more likely to match your reading preferences</li>
+                    <li><strong>Rating Patterns</strong>: Users with similar reading patterns to yours often enjoy similar books</li>
+                    <li><strong>Combined Score</strong>: We combine these factors to calculate the final similarity score</li>
+                </ul>
+                <p>Similarity scores range from 0 to 1, with higher scores indicating greater similarity to your favorite books.</p>
+            </div>
+
+            {% if error %}
+            <div class="alert alert-warning">
+                {{ error }}
+            </div>
+            {% elif not recommendations %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i> No recommendations found based on your favorites. Try adding more books to your favorites to get better recommendations.
+            </div>
+            {% else %}
+                {% for rec in recommendations %}
+                <div class="recommendation-group">
+                    <h3 class="section-title">Based on your favorite:</h3>
+                    <div class="source-book">
+                        <div class="row">
+                            <div class="col-md-2 col-sm-3 text-center">
+                                <img src="{{ rec.source_book.image }}" alt="{{ rec.source_book.title }}" class="book-img mb-2">
+                            </div>
+                            <div class="col-md-10 col-sm-9">
+                                <h4 class="book-title">{{ rec.source_book.title }}</h4>
+                                <p class="book-author">Author: {{ rec.source_book.author }}</p>
+                                <p class="book-meta">Publisher: {{ rec.source_book.publisher }} | Year: {{ rec.source_book.year }}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h4 class="section-title">Similar books recommended for you:</h4>
+                    {% for book in rec.similar_books %}
+                    <div class="similar-book">
+                        <div class="row">
+                            <div class="col-md-2 col-sm-3 text-center">
+                                <img src="{{ book.image }}" alt="{{ book.title }}" class="book-img mb-2">
+                                <div class="similarity-score">
+                                    Similarity: {{ "%.2f"|format(book.similarity) }}
+                                </div>
+                            </div>
+                            <div class="col-md-10 col-sm-9">
+                                <h4 class="book-title">{{ book.title }}</h4>
+                                <p class="book-author">Author: {{ book.author }}</p>
+                                <p class="book-meta">Publisher: {{ book.publisher }} | Year: {{ book.year }}</p>
+                                
+                                <div class="reason-title">
+                                    <i class="fas fa-puzzle-piece"></i> Matching Reasons:
+                                </div>
+                                {% for reason in book.reasons %}
+                                <div class="similarity-reason">
+                                    {{ reason }}
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html> 
