@@ -128,7 +128,7 @@
                 <h4><i class="fas fa-lightbulb"></i> Recommendation Principles</h4>
                 <p>Our recommendation system uses two main methods:</p>
                 <ul>
-                    <li><strong>Quick Recommendations (MF Method)</strong>: Uses Matrix Factorization to identify patterns in users' book ratings and preferences</li>
+                    <li><strong>Quick Recommendations (Stastical Method)</strong>: Uses Content-based or collaborative filtering to identify patterns in users' book ratings and preferences</li>
                     <li><strong>Accurate Recommendations (Hybrid Method)</strong>: Combines content-based and collaborative filtering for more precise recommendations</li>
                 </ul>
                 <p>The similarity factors we consider include:</p>
@@ -172,9 +172,6 @@
                         <div class="row">
                             <div class="col-md-2 col-sm-3 text-center">
                                 <img src="{{ book.image }}" alt="{{ book.title }}" class="book-img mb-2">
-                                <div class="similarity-score">
-                                    Similarity: {{ "%.2f"|format(book.similarity) }}
-                                </div>
                             </div>
                             <div class="col-md-10 col-sm-9">
                                 <h4 class="book-title">{{ book.title }}</h4>
