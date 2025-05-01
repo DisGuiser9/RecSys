@@ -311,6 +311,15 @@
                 </div>
             </div>
         </div>
+        <div class="d-flex justify-content-center align-items-center mt-2" style="gap:.5rem;">
+            <span class="fw-semibold">Rate the system:</span>
+        
+            <input id="sysScore" type="number" min="1" max="5" value="3"
+                   class="form-control form-control-sm" style="width:70px;">
+        
+            <button id="sysSubmit" class="btn btn-sm btn-primary">Submit</button>
+            <span id="sysMsg" class="ms-2 small"></span>
+        </div>
     </div>
 
     <div class="container">
@@ -629,6 +638,30 @@
                 $('#currentMode').removeClass('bg-success').addClass('bg-info');
             }
         }
+        $('#sysSubmit').click(function () {
+            const score = parseInt($('#sysScore').val(), 10);
+            if (!(1 <= score && score <= 5)) {
+                $('#sysMsg').text('1-5 only').addClass('text-danger');
+                return;
+            }
+            $.ajax({
+                url: '/system_feedback',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({
+                    user_id: getUserId(),   // 你已有的函数
+                    score:   score
+                }),
+                success: res => {
+                    if (!res.error) {
+                        $('#sysMsg').text('Thanks!').removeClass('text-danger').addClass('text-success');
+                    } else {
+                        $('#sysMsg').text('Fail').addClass('text-danger');
+                    }
+                },
+                error: () => $('#sysMsg').text('Server error').addClass('text-danger')
+            });
+        });
     </script>
 </body>
 </html> 

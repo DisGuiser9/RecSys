@@ -25,6 +25,8 @@ RATINGS_PATH = 'dataset/Ratings.csv'
 BOOKS_PATH = 'dataset/Books.csv'
 BOOKS_CSV_PATH = os.path.join('dataset', 'Books.csv')
 USER_DATA_DIR = 'data/users'
+SYS_FEED_PATH = os.path.join('data', 'system_feedback.csv')
+os.makedirs('data', exist_ok=True)
 
 # Load initial data
 def load_initial_data():
@@ -722,6 +724,34 @@ def book_detail(isbn):
     if 'Summary' not in book:
         book['Summary'] = ''
     return render_template('book.html', book=book)
+
+@app.route('/system_feedback', methods=['POST'])
+def system_feedback():
+    """
+    接收 JSON { user_id?, score(1-5) }
+    追加写入 data/system_feedback.csv
+    """
+    try:
+        data  = request.get_json(force=True)
+        score = int(data.get('score', 0))
+        user  = data.get('user_id') if is_valid_user_id(data.get('user_id')) else ''
+
+        if not 1 <= score <= 5:
+            return jsonify({'error': 'invalid-score'}), 400
+
+        import csv, datetime, os
+        write_header = not os.path.isfile(SYS_FEED_PATH)
+        with open(SYS_FEED_PATH, 'a', newline='', encoding='utf-8') as f:
+            w = csv.writer(f)
+            if write_header:
+                w.writerow(['timestamp', 'user_id', 'score'])
+            w.writerow([datetime.datetime.now().isoformat(), user, score])
+
+        return jsonify({'error': None})
+    except Exception as e:
+        print('[system_feedback]', e)
+        return jsonify({'error': 'server-error'}), 500
+
 
 @app.route('/book/favorite', methods=['POST'])
 def favorite_book():
