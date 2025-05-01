@@ -32,7 +32,12 @@ This is a Flask-based book recommendation system utilizing the KNN collaborative
    pip install -r requirements.txt
    ```
 
-4. Run the project:
+4. Train the recommendation models
+   ```bash
+   python hybrid.py
+   ```
+
+5. Run the project:
    ```bash
    python app.py
    ```
