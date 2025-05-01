@@ -18,14 +18,13 @@ This is a Flask-based book recommendation system utilizing the KNN collaborative
 
 1. Clone the repository to your local machine:
    ```bash
-   git clone <repository-url>
-   cd <repository-directory>
+   git clone https://github.com/DisGuiser9/RecSys.git
+   cd https://github.com/DisGuiser9/RecSys.git
    ```
 
 2. Create and activate a virtual environment:
    ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows, use `venv\Scripts\activate`
+   conda create -n comp7240
    ```
 
 3. Install the dependencies:

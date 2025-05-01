@@ -386,24 +386,25 @@ def get_quick_recommendations(user_id, n=6):
             popular_books['method'] = 'Popular'
             return popular_books
         
-        # 首先尝试使用MF模型
-        if mf_recommender.is_trained:
-            # 如果用户在MF模型中
-            if user_id in mf_recommender.user_map:
-                print(f"使用MF模型为用户 {user_id} 推荐图书")
-                mf_recs = mf_recommender.recommend_for_user(user_id, n*2)
-                if mf_recs is not None and not mf_recs.empty:
-                    # 排除已收藏图书
-                    mf_recs = mf_recs[~mf_recs['ISBN'].isin(likes)]
-                    if len(mf_recs) > 0:
-                        mf_books = cf_recommender.get_books_by_isbn(mf_recs['ISBN'].tolist()[:n])
-                        if not mf_books.empty:
-                            mf_books['method'] = 'MF-Personalized'
-                            print(f"MF成功推荐 {len(mf_books)} 本图书")
-                            return mf_books.head(n)
+        # # 首先尝试使用MF模型
+        # if mf_recommender.is_trained:
+        #     # 如果用户在MF模型中
+        #     if user_id in mf_recommender.user_map:
+        #         print(f"使用MF模型为用户 {user_id} 推荐图书")
+        #         mf_recs = mf_recommender.recommend_for_user(user_id, n*2)
+        #         if mf_recs is not None and not mf_recs.empty:
+        #             # 排除已收藏图书
+        #             mf_recs = mf_recs[~mf_recs['ISBN'].isin(likes)]
+        #             if len(mf_recs) > 0:
+        #                 mf_books = cf_recommender.get_books_by_isbn(mf_recs['ISBN'].tolist()[:n])
+        #                 if not mf_books.empty:
+        #                     mf_books['method'] = 'MF-Personalized'
+        #                     print(f"MF成功推荐 {len(mf_books)} 本图书")
+        #                     return mf_books.head(n)
         
-        # 如果MF方法失败，尝试基于收藏的相似图书
-        print("MF方法失败，尝试基于内容的相似图书推荐")
+        # # 如果MF方法失败，尝试基于收藏的相似图书
+        # print("MF方法失败，尝试基于内容的相似图书推荐")
+
         all_similar_books = []
         
         for isbn in likes:
@@ -900,26 +901,17 @@ def recommendation_reasons():
             # 生成推荐原因
             reasons = []
             
-            # 基于方法添加原因
-            if method == 'MF-Personalized':
-                reasons.append(f"Matrix Factorization based on your reading history (score: 0.9)")
-            elif method == 'MF-Similar-Items':
-                reasons.append(f"Similar to books you've liked (score: {similarity:.2f})")
-            elif method == 'Hybrid':
-                reasons.append(f"Hybrid recommendation combining content and collaborative filtering (score: 0.95)")
-            elif method == 'Author-Based':
-                reasons.append(f"Author match: {rec_book['Book-Author']} (score: 0.8)")
-            elif method == 'Content-Collaborative':
-                reasons.append(f"Content analysis shows similar themes (score: 0.85)")
-                
-            # 添加具体相似性原因
-            if source_book['author'] == rec_book['Book-Author']:
-                reasons.append(f"Author perfect match: {rec_book['Book-Author']} (score: 1.0)")
-            
-            if source_book['title'] in rec_book['Book-Title']:
-                reasons.append(f"Title perfect match (score: 1.0)")
-            elif source_book['title'].split('(')[0].strip() in rec_book['Book-Title']:
-                reasons.append(f"Title partial match (score: 0.5)")
+            method_map = {
+                'MF-Personalized':  "Recommended by Matrix-Factorization (personalized)",
+                'MF-Similar-Items': "Similar to books you've liked",
+                'Hybrid':           "Hybrid recommendation (content + collaborative)",
+                'Author-Based':     f"Same author: {rec_book['Book-Author']}",
+                'Content-Collaborative': "Content-based similarity"
+            }
+
+            # 如果 method 在映射里就加入对应描述
+            if method in method_map:
+                reasons.append(method_map[method])
                 
             # 构造推荐书的详细信息
             similar_book = {
